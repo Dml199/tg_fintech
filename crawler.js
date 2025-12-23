@@ -2,7 +2,7 @@ import { data } from "./stocks_by_mar_cap.js";
 import url_list from "./url_list.js";
 import puppeteer from "puppeteer";
 import * as url from 'node:url'
-
+import DataTools from "./tools.js"
 
 const specs= {
 reuters:{BASE_URL:"https://www.reuters.com",
@@ -47,46 +47,13 @@ async gather_data(){
 }
 
 
-class DataTools {
-
-  static Validate(list){
-    if (list.length == 0) {console.log("Empty list given!"); throw new Error("Empty list on data pipeline!")}  
-
-  }
-
-
-  static pruneOnEmptyData(list){
-    this.Validate(list)
-         for(let i = list.length-1;i>=0;--i){
-        if (list[i].href == "" || list[i].header == ""){
-            list.splice(i,1)
-        }
-    }
-     
-  }
-
-
-  static pruneOnFewWords(list){
-    this.Validate(list)
-     
-     for(let i = list.length-1;i>=0;--i){
-        if (list[i].header.split(" ").length < 3){
-            list.splice(i,1)
-        }
-  }
-}
-
-}
-
-
-
 
 async function main(){
 const br = new Browser(browser_addr)
 await br.go_to(specs.reuters.BASE_URL)
 await br.gather_data()
-DataTools.pruneOnEmptyData(br.data)
-DataTools.pruneOnFewWords(br.data)
+DataTools.purifyData(list)
+
 console.log(br.data)
 }
 
