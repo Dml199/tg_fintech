@@ -26,7 +26,7 @@ export class DataTools {
         }
   }
 }
-static purifyData(list){
+static async purifyData(list){
   this.pruneOnEmptyData(list);
   this.pruneOnFewWords(list);
 }

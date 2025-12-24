@@ -2,10 +2,10 @@ import { data } from "./stocks_by_mar_cap.js";
 import url_list from "./url_list.js";
 import puppeteer from "puppeteer";
 import * as url from 'node:url'
-import DataTools from "./tools.js"
+import {DataTools} from "./tools.js"
 
 const specs= {
-reuters:{BASE_URL:"https://www.reuters.com",
+reuters:{BASE_URL:"https://www.reuters.com/",
 selector_query:".search-results__list__2SxSK a",
 heading_query:".search-results__list__2SxSK header span"
 },
@@ -21,7 +21,7 @@ class Browser {
 constructor (local_url = "None") {
 
 
-
+this.derived_pages = []
 this.address = local_url;
 this.browser = async () => {return this.address === "None" ? await puppeteer.launch(): await puppeteer.connect({browserURL:this.address})}
 this.page_content
@@ -32,7 +32,7 @@ async go_to(address){
 const browserInst = await this.browser()
 this.page_content = await browserInst.newPage()
 await this.page_content.goto(address,{waitUntil:"domcontentloaded", timeout:0})
-
+return this.page_content
 }
 
 async gather_data(){
@@ -44,6 +44,20 @@ async gather_data(){
   });
 
 }
+
+
+
+async getTextInfo(){
+  let interval= 5;
+  let start = 0;
+  let end = start + interval;
+  data_slice = this.data.slice(start,end)
+ for (let i = start;i<=end; ++i){
+   this.derived_pages.push(await this.go_to(this.data[i].href))
+   console.log(i)
+    
+ }
+}
 }
 
 
@@ -52,7 +66,7 @@ async function main(){
 const br = new Browser(browser_addr)
 await br.go_to(specs.reuters.BASE_URL)
 await br.gather_data()
-DataTools.purifyData(list)
+DataTools.purifyData(br.data)
 
 console.log(br.data)
 }
