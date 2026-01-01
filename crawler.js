@@ -3,17 +3,7 @@ import url_list from "./url_list.js";
 import puppeteer from "puppeteer";
 import * as url from 'node:url'
 import {DataTools, DomLogicHandler} from "./tools.js"
-
-const specs= {
-reuters:{BASE_URL:"https://www.reuters.com/world/us/how-silicon-valley-dealmaker-charmed-trump-gave-intel-lifeline-2025-12-24/",
-selector_query:".search-results__list__2SxSK a",
-heading_query:".search-results__list__2SxSK header span"
-},
-yahoo:{BASE_URL:"https://finance.yahoo.com/",
-selector_query:".search-results__list__2SxSK a",
-heading_query:".search-results__list__2SxSK header span"
-}
-}
+import {specs, FRONT_PAGE_TAG,CONTENT_PAGE_TAG,WAIT_FOR_PAGE_TO} from "./variables.js"
 
 const browser_addr = "http://127.0.0.1:5200"
 
@@ -31,7 +21,7 @@ this.data =[]
 async go_to(address){
 const browserInst = await this.browser()
 this.page_content = await browserInst.newPage()
-await this.page_content.goto(address,{waitUntil:"domcontentloaded", timeout:0})
+await this.page_content.goto(address,{waitUntil:WAIT_FOR_PAGE_TO, timeout:0})
 return this.page_content
 }
 
@@ -67,7 +57,7 @@ catch (e) {
   console.log(e.message)
 }*/
 
-return this.text_data =await DomLogicHandler.check_node(await this.page_content.$("main"))
+return this.text_data =await DomLogicHandler.check_node(await this.page_content.$(CONTENT_PAGE_TAG))
 }
 
 }
@@ -78,7 +68,6 @@ const br = new Browser(browser_addr)
 await br.go_to(specs.reuters.BASE_URL)
 await br.gather_data()
 DataTools.purifyData(br.data)
-console.log(br.page_content)
 const text_info = await br.getTextInfo()
 console.dir(text_info)
 }

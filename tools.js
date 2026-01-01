@@ -1,4 +1,4 @@
-import * as fs from "node:fs"
+import * as fs from "node:fs";
 
 export class DataTools {
   static Validate(list) {
@@ -9,7 +9,7 @@ export class DataTools {
   }
 
   static pruneOnEmptyData(list) {
-    this.Validate(list);
+
     for (let i = list.length - 1; i >= 0; --i) {
       if (list[i].href == "" || list[i].header == "") {
         list.splice(i, 1);
@@ -18,7 +18,7 @@ export class DataTools {
   }
 
   static pruneOnFewWords(list) {
-    this.Validate(list);
+
 
     for (let i = list.length - 1; i >= 0; --i) {
       if (list[i].header.split(" ").length < 3) {
@@ -27,6 +27,7 @@ export class DataTools {
     }
   }
   static async purifyData(list) {
+    this.Validate(list);
     this.pruneOnEmptyData(list);
     this.pruneOnFewWords(list);
   }
@@ -47,39 +48,44 @@ export class DomLogicHandler {
           return false;
         }
       }
+
+
       async function checkCurrentNode(elem) {
-   
-        const children = Array.from(elem.children)
+        const children = Array.from(elem.children);
         let index;
         if (children.length >= 8) {
-          for (let i = 0; i < children.length; ++i) {
-
-            if (clsNm_obj.some((value)=>value.class == children[i].className)) {
-              console.log("Function is doing its magic!!!")
-              /*clsNm_obj.push({class:elem.children[i].className, count: 1})*/
-                clsNm_obj[index].count++
-            }
-             else{ console.log("Values being pushed: "); clsNm_obj.push({class:children[i].className, count: 1});console.log("Values: " + clsNm_obj);}
-            /* if(wordCount(elem.children[i].innerText )){
-                
-              data_arr.push(elem.children[i].innerText);
-            }*/
+        for( let i = 0; i < children.length; ++i){
+           let index = clsNm_obj.findIndex((elem)=>elem.class == children[i].className)
+           if(index == -1){
+            clsNm_obj.push({class:children[i].className,count:1})
+           }
+           else{
+            clsNm_obj[index].count++
+           }
+        }
+        let biggest = clsNm_obj[0];
+        for (let j = 0; j< clsNm_obj.length; ++j)
+        {
+          if(clsNm_obj[j].count > biggest.count){
+            biggest = clsNm_obj[j]
           }
-           
-
+        }
+        children.map((elem)=>{if(elem.className == biggest.class){
+          data_arr.push(elem.textContent)
+        }})
+          
         } else {
           for (child of elem.children) {
             await checkCurrentNode(child);
           }
         }
       }
-      
+
       checkCurrentNode(el);
-      
-      
-      return clsNm_obj;
+       
+      return data_arr;
     });
 
-  return text_info
+    return text_info;
   }
 }
