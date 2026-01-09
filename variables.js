@@ -4,7 +4,7 @@ export const WAIT_FOR_PAGE_TO = "domcontentloaded"
 
 
 export const specs= {
-reuters:{BASE_URL:"https://www.reuters.com/world/asia-pacific/bangladesh-rocked-by-unrest-over-death-student-leader-2025-12-19/",
+reuters:{BASE_URL:"https://www.reuters.com/business/energy/",
 selector_query:".search-results__list__2SxSK a",
 heading_query:".search-results__list__2SxSK header span"
 },
